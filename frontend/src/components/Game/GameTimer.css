@@ -1,0 +1,194 @@
+.game-timer {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: var(--bg-secondary);
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  box-shadow: var(--shadow-lg);
+  border: 2px solid var(--accent-primary-light);
+  border-top: 3px solid var(--accent-primary);
+  min-width: 200px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.game-timer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent-primary), var(--accent-primary-light));
+  animation: timerGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes timerGlow {
+  from { opacity: 0.6; }
+  to { opacity: 1; }
+}
+
+.game-timer.warning {
+  border-color: var(--warning-color);
+  background: var(--bg-secondary);
+  animation: pulse-warning 1s infinite;
+}
+
+.game-timer.warning::before {
+  background: linear-gradient(90deg, var(--warning-color), var(--warning-color-light));
+}
+
+.game-timer.critical {
+  border-color: var(--danger-color);
+  background: var(--bg-secondary);
+  animation: pulse-critical 0.5s infinite;
+}
+
+.game-timer.critical::before {
+  background: linear-gradient(90deg, var(--danger-color), var(--danger-color-light));
+}
+
+@keyframes pulse-warning {
+  0%, 100% {
+    box-shadow: var(--shadow-lg);
+  }
+  50% {
+    box-shadow: 0 4px 20px rgba(245, 158, 11, 0.4);
+  }
+}
+
+@keyframes pulse-critical {
+  0%, 100% {
+    box-shadow: var(--shadow-lg);
+  }
+  50% {
+    box-shadow: 0 4px 20px rgba(239, 68, 68, 0.6);
+  }
+}
+
+.timer-icon {
+  font-size: 1.5rem;
+  color: var(--accent-primary);
+  animation: tick 1s infinite;
+}
+
+@keyframes tick {
+  0%, 50% {
+    transform: rotate(0deg);
+  }
+  75% {
+    transform: rotate(15deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+.timer-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.timer-label {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.timer-value {
+  font-size: 1.5rem;
+  font-weight: bold;
+  font-family: var(--font-mono);
+  color: var(--text-primary);
+}
+
+.timer-value.green {
+  color: var(--success-color);
+  text-shadow: 0 0 10px rgba(52, 211, 153, 0.3);
+}
+
+.timer-value.yellow {
+  color: var(--warning-color);
+  text-shadow: 0 0 10px rgba(245, 158, 11, 0.3);
+}
+
+.timer-value.red {
+  color: var(--danger-color);
+  text-shadow: 0 0 10px rgba(239, 68, 68, 0.3);
+  animation: urgentFlash 0.5s infinite alternate;
+}
+
+@keyframes urgentFlash {
+  from { opacity: 1; }
+  to { opacity: 0.7; }
+}
+
+.timer-progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--bg-tertiary);
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 0 2px 2px 0;
+  position: relative;
+  transition: width 0.3s ease;
+}
+
+.progress-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  animation: progressShimmer 2s infinite;
+}
+
+@keyframes progressShimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.progress-fill.green {
+  background: linear-gradient(90deg, var(--success-color), var(--success-color-light));
+}
+
+.progress-fill.yellow {
+  background: linear-gradient(90deg, var(--warning-color), var(--warning-color-light));
+}
+
+.progress-fill.red {
+  background: linear-gradient(90deg, var(--danger-color), var(--danger-color-light));
+}
+
+@media (max-width: 768px) {
+  .game-timer {
+    min-width: 150px;
+    padding: 0.75rem 1rem;
+    gap: 0.75rem;
+  }
+  
+  .timer-icon {
+    font-size: 1.2rem;
+  }
+  
+  .timer-value {
+    font-size: 1.2rem;
+  }
+  
+  .timer-label {
+    font-size: 0.7rem;
+  }
+}
