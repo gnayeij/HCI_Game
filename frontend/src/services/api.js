@@ -90,6 +90,8 @@ export const usersAPI = {
   getStats: () => api.get('/users/stats'),
   updatePreferences: (preferences) => api.put('/users/preferences', preferences),
   getLeaderboard: (params) => api.get('/users/leaderboard', { params }),
+  updateProfile: (profileData) => api.put('/users/profile', profileData),
+  changePassword: (passwordData) => api.put('/users/password', passwordData),
 };
 
 export default api;

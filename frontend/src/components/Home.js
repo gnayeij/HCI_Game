@@ -10,7 +10,7 @@ const Home = () => {
     <div className="home">
       <div className="hero-section">
         <div className="hero-content">
-          <h1 className="hero-title">🔥 Fire Safety Emergency Trainer</h1>
+          <h1 className="hero-title">Fire Safety Emergency Trainer</h1>
           <p className="hero-subtitle">
             Master critical thinking and decision-making skills for fire emergencies
           </p>

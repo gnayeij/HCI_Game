@@ -1,0 +1,276 @@
+.difficulty-selection-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  min-height: 100vh;
+}
+
+.difficulty-header {
+  text-align: center;
+  margin-bottom: 3rem;
+  position: relative;
+}
+
+.back-button {
+  position: absolute;
+  left: 0;
+  top: 0;
+  padding: 0.75rem 1.5rem;
+  background-color: #f0f0f0;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: #333;
+  font-weight: 500;
+}
+
+.back-button:hover {
+  background-color: #e0e0e0;
+  transform: translateX(-5px);
+}
+
+.difficulty-header h1 {
+  font-size: 2.5rem;
+  color: #333;
+  margin-bottom: 0.5rem;
+  margin-top: 1rem;
+}
+
+.difficulty-header p {
+  font-size: 1.2rem;
+  color: #666;
+}
+
+.difficulty-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-bottom: 3rem;
+}
+
+.difficulty-card {
+  background: white;
+  border-radius: 16px;
+  padding: 2rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border: 3px solid transparent;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 600px;
+}
+
+.difficulty-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 5px;
+  transition: height 0.3s ease;
+}
+
+.difficulty-card.green::before {
+  background: linear-gradient(135deg, #4caf50, #66bb6a);
+}
+
+.difficulty-card.yellow::before {
+  background: linear-gradient(135deg, #ffc107, #ffb300);
+}
+
+.difficulty-card.red::before {
+  background: linear-gradient(135deg, #f44336, #e53935);
+}
+
+.difficulty-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+.difficulty-card:hover::before {
+  height: 100%;
+  opacity: 0.1;
+}
+
+.difficulty-card.green:hover {
+  border-color: #4caf50;
+}
+
+.difficulty-card.yellow:hover {
+  border-color: #ffc107;
+}
+
+.difficulty-card.red:hover {
+  border-color: #f44336;
+}
+
+.difficulty-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.difficulty-card h2 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.decision-time {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 1.5rem 0;
+  padding: 1rem;
+  background-color: #f9f9f9;
+  border-radius: 12px;
+}
+
+.time-value {
+  font-size: 3rem;
+  font-weight: bold;
+  line-height: 1;
+}
+
+.difficulty-card.green .time-value {
+  color: #4caf50;
+}
+
+.difficulty-card.yellow .time-value {
+  color: #ffc107;
+}
+
+.difficulty-card.red .time-value {
+  color: #f44336;
+}
+
+.time-label {
+  font-size: 0.9rem;
+  color: #666;
+  margin-top: 0.25rem;
+}
+
+.difficulty-description {
+  font-size: 1.1rem;
+  color: #555;
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+}
+
+.difficulty-features {
+  list-style: none;
+  padding: 0;
+  margin: 1.5rem 0;
+  text-align: left;
+  flex-grow: 1;
+}
+
+.difficulty-features li {
+  padding: 0.5rem 0;
+  color: #666;
+  font-size: 0.95rem;
+}
+
+.select-button {
+  width: 100%;
+  padding: 1rem 2rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: auto;
+  color: white;
+}
+
+.difficulty-card.green .select-button {
+  background: linear-gradient(135deg, #4caf50, #66bb6a);
+}
+
+.difficulty-card.yellow .select-button {
+  background: linear-gradient(135deg, #ffc107, #ffb300);
+}
+
+.difficulty-card.red .select-button {
+  background: linear-gradient(135deg, #f44336, #e53935);
+}
+
+.select-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.difficulty-info {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.info-box {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 2rem;
+  border-radius: 16px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.info-box h3 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.info-box p {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .difficulty-selection-container {
+    padding: 1rem;
+  }
+
+  .difficulty-header h1 {
+    font-size: 2rem;
+    margin-top: 3rem;
+  }
+
+  .difficulty-header p {
+    font-size: 1rem;
+  }
+
+  .back-button {
+    position: static;
+    display: block;
+    margin-bottom: 1rem;
+    width: 100%;
+  }
+
+  .difficulty-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .difficulty-card {
+    padding: 1.5rem;
+  }
+
+  .difficulty-icon {
+    font-size: 3rem;
+  }
+
+  .difficulty-card h2 {
+    font-size: 1.5rem;
+  }
+
+  .time-value {
+    font-size: 2.5rem;
+  }
+}

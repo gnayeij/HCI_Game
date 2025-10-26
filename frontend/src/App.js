@@ -8,6 +8,7 @@ import Login from './components/Auth/Login';
 import Register from './components/Auth/Register';
 import GameBoard from './components/Game/GameBoard';
 import ScenariosList from './components/Game/ScenariosList';
+import DifficultySelection from './components/Game/DifficultySelection';
 import Profile from './components/Profile';
 import './App.css';
 
@@ -31,7 +32,15 @@ function AppContent() {
             } 
           />
           <Route 
-            path="/game/:scenarioId" 
+            path="/game/:scenarioId/difficulty" 
+            element={
+              <ProtectedRoute>
+                <DifficultySelection />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/game/:scenarioId/:difficulty" 
             element={
               <ProtectedRoute>
                 <GameBoard />

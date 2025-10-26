@@ -169,12 +169,63 @@ router.post('/sessions/:sessionId/decision', authMiddleware, async (req, res) =>
       session.currentNodeId = decision.nextNodeId;
       const nextNode = scenario.nodes.find(node => node.id === decision.nextNodeId);
       
+      // Check if the next node is an ending node
+      if (nextNode && nextNode.isEnding) {
+        session.isCompleted = true;
+        session.endTime = new Date();
+        session.completionTime = Math.floor((session.endTime - session.startTime) / 1000);
+        
+        // Use the ending type from the node, or determine from player state
+        if (nextNode.endingType) {
+          session.finalOutcome = nextNode.endingType;
+        } else {
+          // Fallback to health-based determination
+          if (session.playerState.health <= 0) {
+            session.finalOutcome = 'failure';
+          } else if (session.playerState.health >= 80) {
+            session.finalOutcome = 'success';
+          } else {
+            session.finalOutcome = 'partial';
+          }
+        }
+        
+        session.calculateScore();
+        await session.save();
+        
+        // Update user stats
+        await req.user.updateOne({
+          $inc: { 
+            'gameStats.totalGamesPlayed': 1,
+            'gameStats.totalTimeSpent': session.completionTime
+          },
+          $addToSet: { 
+            'gameStats.scenariosCompleted': scenario._id 
+          }
+        });
+        
+        return res.json({
+          message: 'Game completed',
+          session,
+          gameEnded: true,
+          currentNode: null,
+          finalOutcome: session.finalOutcome,
+          score: session.score,
+          decision: {
+            text: decision.text,
+            consequences: decision.consequences,
+            educationalNote: decision.educationalNote
+          }
+        });
+      }
+      
+      // Continue to next node (not an ending)
       await session.save();
       
       res.json({
         message: 'Decision recorded',
         session,
         currentNode: nextNode,
+        gameEnded: false,
         decision: {
           text: decision.text,
           consequences: decision.consequences,
@@ -213,8 +264,15 @@ router.post('/sessions/:sessionId/decision', authMiddleware, async (req, res) =>
       res.json({
         message: 'Game completed',
         session,
+        gameEnded: true,
+        currentNode: null,
         finalOutcome: session.finalOutcome,
-        score: session.score
+        score: session.score,
+        decision: {
+          text: decision.text,
+          consequences: decision.consequences,
+          educationalNote: decision.educationalNote
+        }
       });
     }
 

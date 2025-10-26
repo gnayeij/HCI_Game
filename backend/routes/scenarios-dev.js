@@ -644,6 +644,7 @@ router.post('/sessions/:sessionId/decision', (req, res) => {
       res.json({
         message: 'Game completed',
         session,
+        currentNode: null,
         gameEnded: true,
         finalOutcome: 'completed',
         decision: {

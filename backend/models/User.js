@@ -49,7 +49,8 @@ const userSchema = new mongoose.Schema({
     },
     soundEnabled: { type: Boolean, default: true },
     timerEnabled: { type: Boolean, default: true },
-    hints: { type: Boolean, default: true }
+    hints: { type: Boolean, default: true },
+    language: { type: String, default: 'english' }
   }
 }, {
   timestamps: true

@@ -8,15 +8,30 @@ import GameTimer from './GameTimer';
 import './GameBoard.css';
 
 const GameBoard = () => {
-  const { scenarioId } = useParams();
+  const { scenarioId, difficulty } = useParams();
   const navigate = useNavigate();
   const { user, token, isAuthenticated } = useAuth();
   
-  // Unified timer duration for all decisions (in seconds)
-  const DECISION_TIME_LIMIT = 20;
+  // Determine decision time based on difficulty
+  const getDecisionTimeLimit = (diff) => {
+    switch (diff) {
+      case 'easy':
+        return 30;
+      case 'medium':
+        return 20;
+      case 'hard':
+        return 10;
+      default:
+        return 20; // Default to medium if something goes wrong
+    }
+  };
+  
+  const DECISION_TIME_LIMIT = getDecisionTimeLimit(difficulty);
   
   console.log('GameBoard - Auth state:', { user, token: token ? 'Present' : 'Missing', isAuthenticated });
   console.log('GameBoard - Scenario ID:', scenarioId);
+  console.log('GameBoard - Difficulty:', difficulty);
+  console.log('GameBoard - Decision Time Limit:', DECISION_TIME_LIMIT);
   
   const [gameState, setGameState] = useState({
     scenario: null,
@@ -118,7 +133,7 @@ const GameBoard = () => {
         error: error.response?.data?.message || error.message || 'Failed to initialize game'
       }));
     }
-  }, [scenarioId]);
+  }, [scenarioId, DECISION_TIME_LIMIT]);
 
   useEffect(() => {
     initializeGame();
@@ -165,6 +180,10 @@ const GameBoard = () => {
 
       const { session, currentNode, gameEnded, finalOutcome, decision: decisionResult } = response.data;
 
+      console.log('Game ended?', gameEnded);
+      console.log('Final outcome:', finalOutcome);
+      console.log('Current node:', currentNode);
+
       // Add decision to history
       const newHistoryEntry = {
         type: 'decision',
@@ -188,11 +207,14 @@ const GameBoard = () => {
 
       // Update game state
       if (gameEnded) {
+        console.log('Game has ended, setting status to completed');
         setGameState(prev => ({
           ...prev,
           playerState: session.playerState,
+          session: session,
+          finalOutcome: finalOutcome,
           gameStatus: 'completed',
-          currentNode: currentNode,
+          currentNode: null,
           isTimerActive: false
         }));
 
@@ -346,6 +368,15 @@ const GameBoard = () => {
     }, 100); // Small delay to ensure timer is stopped first
   };
 
+  const handleTryAgain = () => {
+    // Reset game state and restart
+    initializeGame();
+  };
+
+  const handleReturnHome = () => {
+    navigate('/');
+  };
+
   if (gameState.gameStatus === 'loading') {
     return (
       <div className="game-loading">
@@ -374,13 +405,31 @@ const GameBoard = () => {
   return (
     <div className="game-board">
       <div className="game-header">
-        <h1>{gameState.scenario?.title}</h1>
-        {gameState.isTimerActive && (
-          <GameTimer
-            timeRemaining={gameState.timeRemaining}
-            onTimeUp={handleTimeUp}
-          />
-        )}
+        <button 
+          className="back-to-scenarios-button" 
+          onClick={() => navigate('/scenarios')}
+          aria-label="Back to Scenarios"
+        >
+          <span className="back-arrow">←</span>
+          <span className="back-text">Back to Scenarios</span>
+        </button>
+        <div className="header-title-section">
+          <h1>{gameState.scenario?.title}</h1>
+          <span className={`difficulty-badge-game ${difficulty}`}>
+            {difficulty === 'easy' && '🌱 Easy'}
+            {difficulty === 'medium' && '⚡ Medium'}
+            {difficulty === 'hard' && '🔥 Hard'}
+            {' - '}{DECISION_TIME_LIMIT}s per decision
+          </span>
+        </div>
+        <div className="timer-placeholder">
+          {gameState.isTimerActive && (
+            <GameTimer
+              timeRemaining={gameState.timeRemaining}
+              onTimeUp={handleTimeUp}
+            />
+          )}
+        </div>
       </div>
 
       <div className="game-content">
@@ -390,6 +439,11 @@ const GameBoard = () => {
             currentNode={gameState.currentNode}
             onDecision={handleDecision}
             isActive={gameState.gameStatus === 'playing'}
+            gameStatus={gameState.gameStatus}
+            finalOutcome={gameState.finalOutcome}
+            playerScore={gameState.session}
+            onTryAgain={handleTryAgain}
+            onReturnHome={handleReturnHome}
           />
         </div>
 

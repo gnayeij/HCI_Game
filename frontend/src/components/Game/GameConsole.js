@@ -6,10 +6,45 @@ const GameConsole = ({
   currentNode, 
   onDecision, 
   onStartTimer, 
-  isActive 
+  isActive,
+  gameStatus,
+  finalOutcome,
+  playerScore,
+  onTryAgain,
+  onReturnHome
 }) => {
   const consoleRef = useRef(null);
   const [showDecisions, setShowDecisions] = useState(false);
+
+  // Helper function to get completion display based on outcome
+  const getCompletionDisplay = () => {
+    switch (finalOutcome) {
+      case 'success':
+        return {
+          icon: '🎉✨',
+          status: 'SUCCESS',
+          statusClass: 'status-success'
+        };
+      case 'failure':
+        return {
+          icon: '💀🔥',
+          status: 'GAME OVER',
+          statusClass: 'status-failure'
+        };
+      case 'partial':
+        return {
+          icon: '⚠️🏃',
+          status: 'EVACUATED',
+          statusClass: 'status-partial'
+        };
+      default:
+        return {
+          icon: '🚪🏃',
+          status: 'COMPLETED',
+          statusClass: 'status-default'
+        };
+    }
+  };
 
   useEffect(() => {
     // Auto-scroll to bottom when new content is added
@@ -19,8 +54,8 @@ const GameConsole = ({
   }, [gameHistory]);
 
   useEffect(() => {
-    // Show decisions after a brief delay for dramatic effect
-    if (currentNode && currentNode.decisions) {
+    // Show decisions after a brief delay for dramatic effect, but ONLY if game is still playing
+    if (currentNode && currentNode.decisions && currentNode.decisions.length > 0 && gameStatus === 'playing') {
       console.log('GameConsole: currentNode received, will show decisions in 1.5s');
       console.log('GameConsole: currentNode decisions:', currentNode.decisions);
       const timer = setTimeout(() => {
@@ -29,11 +64,12 @@ const GameConsole = ({
       }, 1500);
       return () => clearTimeout(timer);
     } else {
-      console.log('GameConsole: No currentNode or decisions, hiding decisions');
+      console.log('GameConsole: No currentNode or decisions, or game not playing, hiding decisions');
       console.log('GameConsole: currentNode:', currentNode);
+      console.log('GameConsole: gameStatus:', gameStatus);
       setShowDecisions(false);
     }
-  }, [currentNode]);
+  }, [currentNode, gameStatus]);
 
   const handleDecisionClick = (decision) => {
     if (!isActive) return;
@@ -94,7 +130,7 @@ const GameConsole = ({
           </div>
         ))}
 
-        {showDecisions && currentNode && currentNode.decisions && (
+        {showDecisions && currentNode && currentNode.decisions && currentNode.decisions.length > 0 && gameStatus === 'playing' && (
           <div className="decisions-container">
             <div className="decisions-prompt">
               <span className="prompt-icon">🤔</span>
@@ -122,6 +158,39 @@ const GameConsole = ({
                   </div>
                 </button>
               ))}
+            </div>
+          </div>
+        )}
+
+        {gameStatus === 'completed' && (
+          <div className="game-completion-container">
+            <div className={`completion-card ${getCompletionDisplay().statusClass}`}>
+              <div className="completion-icon">
+                <span role="img" aria-label="completion">{getCompletionDisplay().icon}</span>
+              </div>
+              <div className="completion-status">{getCompletionDisplay().status}</div>
+              <div className="completion-details">
+                <div className="completion-stat">
+                  <span className="stat-label">Time:</span>
+                  <span className="stat-value">
+                    {playerScore?.completionTime 
+                      ? `${Math.floor(playerScore.completionTime / 60)}m ${playerScore.completionTime % 60}s` 
+                      : 'N/A'}
+                  </span>
+                </div>
+                <div className="completion-stat">
+                  <span className="stat-label">Score:</span>
+                  <span className="stat-value">{playerScore?.score?.total || 0}</span>
+                </div>
+              </div>
+              <div className="completion-actions">
+                <button className="completion-btn try-again-btn" onClick={onTryAgain}>
+                  Try Again
+                </button>
+                <button className="completion-btn home-btn" onClick={onReturnHome}>
+                  Return Home
+                </button>
+              </div>
             </div>
           </div>
         )}

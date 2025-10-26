@@ -26,6 +26,13 @@ const authReducer = (state, action) => {
         error: null,
       };
     
+    case 'UPDATE_USER':
+      localStorage.setItem('user', JSON.stringify(action.payload));
+      return {
+        ...state,
+        user: action.payload,
+      };
+    
     case 'LOGOUT':
       localStorage.removeItem('token');
       localStorage.removeItem('user');
@@ -149,13 +156,18 @@ export const AuthProvider = ({ children }) => {
     dispatch({ type: 'CLEAR_ERROR' });
   }, []);
 
+  const updateUser = useCallback((userData) => {
+    dispatch({ type: 'UPDATE_USER', payload: userData });
+  }, []);
+
   const value = useMemo(() => ({
     ...state,
     login,
     register,
     logout,
     clearError,
-  }), [state, login, register, logout, clearError]);
+    updateUser,
+  }), [state, login, register, logout, clearError, updateUser]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

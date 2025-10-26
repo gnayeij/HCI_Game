@@ -123,7 +123,7 @@ const ScenariosList = () => {
 
             <div className="scenario-footer">
               <Link 
-                to={`/game/${scenario._id}`} 
+                to={`/game/${scenario._id}/difficulty`} 
                 className="start-button"
               >
                 Start Training
