@@ -8,8 +8,7 @@ A text-based web game that teaches fire emergency preparedness through critical 
 fire-safety-game/
 ├── frontend/          # React application
 ├── backend/           # Node.js/Express API server
-├── shared/            # Shared types and utilities
-└── docs/              # Documentation
+├── db-dump/           # An export of the MongoDB Database for this app
 ```
 
 ## Tech Stack
@@ -39,11 +38,23 @@ fire-safety-game/
 ## Game Features
 
 - Time-based decision making in fire emergencies
-- Multiple scenarios (office, residential, school)
+- Multiple scenarios (office, school)
 - User accounts and progress tracking
 - Admin panel for scenario management
 - Cross-platform (PC, mobile, tablet)
 
-## Development Status
+### Importing the Database (for others)
 
-🚧 **In Development** - Initial setup phase
+1. Make sure [MongoDB Database Tools](https://www.mongodb.com/docs/database-tools/) are installed and running.
+2. Copy the `db-dump` folder to your machine.
+3. Run the following command to restore the database:
+
+    ```cmd
+    mongorestore --db fire-safety-game ./db-dump/fire-safety-game
+    ```
+
+---
+
+**Note:**
+- These commands work on Windows CMD, PowerShell, and most terminals.
+- You may need to add MongoDB's `bin` directory to your PATH if `mongodump` or `mongorestore` are not recognized.
