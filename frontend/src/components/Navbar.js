@@ -16,7 +16,8 @@ const Navbar = () => {
     <nav className="navbar">
       <div className="navbar-container">
         <Link to="/" className="navbar-brand">
-          🔥 Code Red
+          <img src="/logo.png" alt="Fire Safety Logo" className="navbar-logo" />
+          <span>Code Red</span>
         </Link>
         
         <div className="navbar-menu">
@@ -24,6 +25,9 @@ const Navbar = () => {
             <>
               <Link to="/scenarios" className="navbar-link">
                 Scenarios
+              </Link>
+              <Link to="/leaderboard" className="navbar-link">
+                🏆 Leaderboard
               </Link>
               <Link to="/profile" className="navbar-link">
                 Profile
@@ -39,6 +43,9 @@ const Navbar = () => {
             <>
               <Link to="/" className="navbar-link">
                 Home
+              </Link>
+              <Link to="/leaderboard" className="navbar-link">
+                🏆 Leaderboard
               </Link>
               <Link to="/login" className="navbar-link">
                 Login

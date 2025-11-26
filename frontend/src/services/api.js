@@ -69,7 +69,23 @@ export const scenariosAPI = {
   },
   startGame: (scenarioId) => {
     const endpoint = USE_DEV_ENDPOINTS ? `/scenarios-dev/${scenarioId}/start` : `/scenarios/${scenarioId}/start`;
-    return api.post(endpoint);
+    
+    // Try to get user info from localStorage for development mode
+    const userStr = localStorage.getItem('user');
+    let userData = {};
+    if (userStr) {
+      try {
+        const user = JSON.parse(userStr);
+        userData = {
+          userId: user._id,
+          username: user.username
+        };
+      } catch (e) {
+        console.error('Error parsing user data:', e);
+      }
+    }
+    
+    return api.post(endpoint, userData);
   },
   makeDecision: (sessionId, decisionData) => {
     const endpoint = USE_DEV_ENDPOINTS ? `/scenarios-dev/sessions/${sessionId}/decision` : `/scenarios/sessions/${sessionId}/decision`;
@@ -89,7 +105,10 @@ export const scenariosAPI = {
 export const usersAPI = {
   getStats: () => api.get('/users/stats'),
   updatePreferences: (preferences) => api.put('/users/preferences', preferences),
-  getLeaderboard: (params) => api.get('/users/leaderboard', { params }),
+  getLeaderboard: (params) => {
+    const endpoint = USE_DEV_ENDPOINTS ? '/scenarios-dev/leaderboard' : '/users/leaderboard';
+    return api.get(endpoint, { params });
+  },
   updateProfile: (profileData) => api.put('/users/profile', profileData),
   changePassword: (passwordData) => api.put('/users/password', passwordData),
 };

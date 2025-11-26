@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import CompletionLeaderboard from './CompletionLeaderboard';
 import './GameConsole.css';
 
 const GameConsole = ({ 
@@ -141,7 +142,7 @@ const GameConsole = ({
               {currentNode.decisions.map((decision, index) => (
                 <button
                   key={decision.id}
-                  className="decision-button"
+                  className={`decision-button decision-option ${index === 0 ? 'first-decision' : ''}`}
                   onClick={() => handleDecisionClick(decision)}
                   disabled={!isActive}
                 >
@@ -183,6 +184,10 @@ const GameConsole = ({
                   <span className="stat-value">{playerScore?.score?.total || 0}</span>
                 </div>
               </div>
+              
+              {/* Leaderboard and Comparison Component */}
+              <CompletionLeaderboard playerScore={playerScore} />
+              
               <div className="completion-actions">
                 <button className="completion-btn try-again-btn" onClick={onTryAgain}>
                   Try Again

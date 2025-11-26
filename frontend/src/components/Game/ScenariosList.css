@@ -63,6 +63,8 @@
   transition: all var(--transition-normal);
   overflow: hidden;
   position: relative;
+  display: flex;
+  flex-direction: column;
 }
 
 .scenario-card:hover {
@@ -147,6 +149,7 @@
 
 .scenario-content {
   padding: 1.5rem;
+  flex: 1;
 }
 
 .scenario-content h3 {

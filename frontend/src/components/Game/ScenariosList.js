@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import { useTutorial } from '../../contexts/TutorialContext';
 import { scenariosAPI } from '../../services/api';
 import './ScenariosList.css';
 
@@ -9,6 +10,7 @@ const ScenariosList = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { user, token, isAuthenticated } = useAuth();
+  const { nextStep, isStepActive } = useTutorial();
 
   console.log('ScenariosList - Auth state:', { user, token: token ? 'Present' : 'Missing', isAuthenticated });
 
@@ -63,6 +65,13 @@ const ScenariosList = () => {
       case 'retail': return '🏪';
       case 'industrial': return '🏭';
       default: return '🔥';
+    }
+  };
+
+  const handleStartTraining = () => {
+    // If tutorial is active on this step, advance to next step
+    if (isStepActive('scenarios-list')) {
+      nextStep();
     }
   };
 
@@ -125,6 +134,7 @@ const ScenariosList = () => {
               <Link 
                 to={`/game/${scenario._id}/difficulty`} 
                 className="start-button"
+                onClick={handleStartTraining}
               >
                 Start Training
               </Link>

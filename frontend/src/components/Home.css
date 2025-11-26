@@ -173,6 +173,26 @@
   line-height: 1.6;
 }
 
+.cta-section {
+  background: linear-gradient(135deg, rgba(66, 165, 245, 0.1) 0%, rgba(38, 198, 218, 0.1) 100%);
+  padding: 4rem 2rem;
+  text-align: center;
+  position: relative;
+}
+
+.cta-section h2 {
+  font-size: 2.5rem;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+  font-weight: 700;
+}
+
+.cta-section p {
+  font-size: 1.3rem;
+  color: var(--text-secondary);
+  margin-bottom: 2rem;
+}
+
 @media (max-width: 768px) {
   .hero-title {
     font-size: 2.5rem;
@@ -193,5 +213,13 @@
   
   .hero-section {
     padding: 3rem 1rem;
+  }
+  
+  .cta-section h2 {
+    font-size: 2rem;
+  }
+  
+  .cta-section p {
+    font-size: 1.1rem;
   }
 }

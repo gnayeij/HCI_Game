@@ -141,18 +141,73 @@ router.put('/preferences', authMiddleware, async (req, res) => {
 });
 
 // @route   GET /api/users/leaderboard
-// @desc    Get leaderboard
+// @desc    Get leaderboard with top scores
 // @access  Public
 router.get('/leaderboard', async (req, res) => {
   try {
-    const { limit = 10 } = req.query;
+    const { limit = 10, sortBy = 'highScore' } = req.query;
+    const GameSession = require('../models/GameSession');
 
-    const users = await User.find()
-      .select('username gameStats.totalGamesPlayed gameStats.averageCompletionTime gameStats.bestCompletionTime')
-      .sort({ 'gameStats.totalGamesPlayed': -1, 'gameStats.bestCompletionTime': 1 })
-      .limit(parseInt(limit));
+    // Get top scores from GameSessions
+    const topScores = await GameSession.aggregate([
+      {
+        $match: {
+          isCompleted: true,
+          'score.total': { $gt: 0 }
+        }
+      },
+      {
+        $group: {
+          _id: '$user',
+          highScore: { $max: '$score.total' },
+          totalGames: { $sum: 1 },
+          averageScore: { $avg: '$score.total' },
+          bestTime: { $min: '$completionTime' }
+        }
+      },
+      {
+        $lookup: {
+          from: 'users',
+          localField: '_id',
+          foreignField: '_id',
+          as: 'userInfo'
+        }
+      },
+      {
+        $unwind: '$userInfo'
+      },
+      {
+        $project: {
+          _id: 1,
+          username: '$userInfo.username',
+          highScore: 1,
+          totalGames: 1,
+          averageScore: { $round: ['$averageScore', 1] },
+          bestTime: 1
+        }
+      },
+      {
+        $sort: sortBy === 'avgScore' 
+          ? { averageScore: -1 } 
+          : sortBy === 'totalGames'
+          ? { totalGames: -1, highScore: -1 }
+          : { highScore: -1 }
+      },
+      {
+        $limit: parseInt(limit)
+      }
+    ]);
 
-    res.json({ leaderboard: users });
+    // Add rank to each entry
+    const leaderboard = topScores.map((entry, index) => ({
+      rank: index + 1,
+      ...entry
+    }));
+
+    res.json({ 
+      leaderboard,
+      sortBy 
+    });
 
   } catch (error) {
     console.error('Get leaderboard error:', error);

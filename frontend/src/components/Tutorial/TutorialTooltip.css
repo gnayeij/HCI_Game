@@ -1,0 +1,317 @@
+/* Tutorial Tooltip */
+.tutorial-tooltip {
+  position: fixed;
+  min-width: 350px;
+  max-width: 450px;
+  background: var(--bg-card);
+  border: 2px solid var(--accent-primary);
+  border-radius: 12px;
+  box-shadow: 
+    0 10px 40px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(66, 165, 245, 0.2),
+    0 0 30px rgba(66, 165, 245, 0.3);
+  z-index: 10003;
+  pointer-events: all;
+  animation: tooltipSlideIn 0.3s ease-out;
+  backdrop-filter: blur(10px);
+}
+
+/* Arrow styles */
+.tutorial-tooltip::before {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  z-index: 1;
+}
+
+.tutorial-tooltip::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  z-index: 2;
+}
+
+.tutorial-tooltip-arrow-top::before {
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 0 14px 14px 14px;
+  border-color: transparent transparent var(--accent-primary) transparent;
+}
+
+.tutorial-tooltip-arrow-top::after {
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 0 12px 12px 12px;
+  border-color: transparent transparent var(--bg-card) transparent;
+  margin-bottom: -1px;
+}
+
+.tutorial-tooltip-arrow-bottom::before {
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 14px 14px 0 14px;
+  border-color: var(--accent-primary) transparent transparent transparent;
+}
+
+.tutorial-tooltip-arrow-bottom::after {
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 12px 12px 0 12px;
+  border-color: var(--bg-card) transparent transparent transparent;
+  margin-top: -1px;
+}
+
+.tutorial-tooltip-arrow-left::before {
+  right: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  border-width: 14px 14px 14px 0;
+  border-color: transparent var(--accent-primary) transparent transparent;
+}
+
+.tutorial-tooltip-arrow-left::after {
+  right: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  border-width: 12px 12px 12px 0;
+  border-color: transparent var(--bg-card) transparent transparent;
+  margin-right: -1px;
+}
+
+.tutorial-tooltip-arrow-right::before {
+  left: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  border-width: 14px 0 14px 14px;
+  border-color: transparent transparent transparent var(--accent-primary);
+}
+
+.tutorial-tooltip-arrow-right::after {
+  left: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  border-width: 12px 0 12px 12px;
+  border-color: transparent transparent transparent var(--bg-card);
+  margin-left: -1px;
+}
+
+.tutorial-tooltip-arrow-none::before {
+  display: none;
+}
+
+/* Tooltip Header */
+.tutorial-tooltip-header {
+  padding: 1.5rem 1.5rem 1rem;
+  border-bottom: 1px solid var(--border-primary);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  background: linear-gradient(135deg, 
+    rgba(66, 165, 245, 0.1) 0%, 
+    rgba(38, 198, 218, 0.05) 100%);
+  border-radius: 10px 10px 0 0;
+}
+
+.tutorial-tooltip-header h3 {
+  margin: 0;
+  font-size: 1.3rem;
+  color: var(--text-primary);
+  font-weight: 700;
+  flex: 1;
+  padding-right: 1rem;
+}
+
+.tutorial-close-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all var(--transition-normal);
+}
+
+.tutorial-close-btn:hover {
+  background: rgba(239, 83, 80, 0.2);
+  color: var(--accent-danger);
+}
+
+/* Tooltip Body */
+.tutorial-tooltip-body {
+  padding: 1.5rem;
+}
+
+.tutorial-tooltip-body p {
+  margin: 0;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  font-size: 1rem;
+}
+
+/* Tooltip Footer */
+.tutorial-tooltip-footer {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--border-primary);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg-tertiary);
+  border-radius: 0 0 10px 10px;
+}
+
+.tutorial-progress {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.tutorial-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+/* When only showing Finish button (completion step), center it */
+.tutorial-actions:has(.tutorial-btn-primary:only-child) {
+  justify-content: center;
+}
+
+.tutorial-btn {
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  border: none;
+  font-family: var(--font-primary);
+}
+
+.tutorial-btn-skip {
+  background: transparent;
+  color: var(--text-muted);
+  border: 1px solid var(--border-primary);
+}
+
+.tutorial-btn-skip:hover {
+  background: rgba(239, 83, 80, 0.1);
+  color: var(--accent-danger);
+  border-color: var(--accent-danger);
+}
+
+.tutorial-btn-primary {
+  background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+  color: white;
+  box-shadow: 0 2px 8px rgba(66, 165, 245, 0.3);
+}
+
+.tutorial-btn-primary:hover {
+  box-shadow: 0 4px 12px rgba(66, 165, 245, 0.5);
+  transform: translateY(-2px);
+}
+
+/* Progress Dots */
+.tutorial-progress-dots {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  padding: 1rem 1.5rem 0.5rem;
+}
+
+.tutorial-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--border-primary);
+  transition: all var(--transition-normal);
+}
+
+.tutorial-dot.active {
+  background: var(--accent-primary);
+  box-shadow: 0 0 8px rgba(66, 165, 245, 0.6);
+  transform: scale(1.3);
+}
+
+.tutorial-dot.completed {
+  background: var(--accent-success);
+}
+
+/* Animations */
+@keyframes tooltipSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .tutorial-tooltip {
+    min-width: 90vw;
+    max-width: 90vw;
+    left: 5vw !important;
+    right: 5vw !important;
+  }
+
+  .tutorial-tooltip-header h3 {
+    font-size: 1.1rem;
+  }
+
+  .tutorial-tooltip-body p {
+    font-size: 0.95rem;
+  }
+
+  .tutorial-tooltip-footer {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+  }
+
+  .tutorial-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .tutorial-btn {
+    flex: 1;
+  }
+}
+
+/* Pulse animation for attention */
+@keyframes tooltipPulse {
+  0%, 100% {
+    box-shadow: 
+      0 10px 40px rgba(0, 0, 0, 0.5),
+      0 0 0 1px rgba(66, 165, 245, 0.2),
+      0 0 30px rgba(66, 165, 245, 0.3);
+  }
+  50% {
+    box-shadow: 
+      0 10px 40px rgba(0, 0, 0, 0.5),
+      0 0 0 2px rgba(66, 165, 245, 0.4),
+      0 0 40px rgba(66, 165, 245, 0.5);
+  }
+}
+
+.tutorial-tooltip {
+  animation: tooltipSlideIn 0.3s ease-out, tooltipPulse 2s ease-in-out infinite 0.5s;
+}

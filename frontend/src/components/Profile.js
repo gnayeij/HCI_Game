@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import { useTutorial } from '../contexts/TutorialContext';
+import { useNavigate } from 'react-router-dom';
 import { usersAPI } from '../services/api';
 import './Profile.css';
 
 const Profile = () => {
   const { user, updateUser } = useAuth();
+  const { resetTutorial, startTutorial } = useTutorial();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('settings');
   const [loading, setLoading] = useState(false);
   const [notification, setNotification] = useState(null);
@@ -123,6 +127,15 @@ const Profile = () => {
     }
   };
 
+  const handleRestartTutorial = () => {
+    resetTutorial();
+    showNotification('Tutorial reset! Redirecting to home...', 'success');
+    setTimeout(() => {
+      navigate('/');
+      startTutorial();
+    }, 1500);
+  };
+
   return (
     <div className="profile-container">
       {notification && (
@@ -149,6 +162,13 @@ const Profile = () => {
             >
               <span className="nav-icon">🔒</span>
               Password
+            </button>
+            <button
+              className={`nav-item ${activeTab === 'tutorial' ? 'active' : ''}`}
+              onClick={() => setActiveTab('tutorial')}
+            >
+              <span className="nav-icon">🎓</span>
+              Tutorial
             </button>
           </nav>
         </div>
@@ -278,6 +298,34 @@ const Profile = () => {
                   {loading ? 'Updating...' : 'Update Password'}
                 </button>
               </form>
+            </div>
+          )}
+
+          {activeTab === 'tutorial' && (
+            <div className="tutorial-panel">
+              <h2>Tutorial Settings</h2>
+              <div className="tutorial-info">
+                <p>
+                  <strong>📚 Interactive Tutorial</strong>
+                </p>
+                <p>
+                  Learn how to navigate the Fire Safety Trainer with our interactive tutorial. 
+                  The tutorial will guide you through starting a scenario, selecting difficulty, 
+                  and making your first decision.
+                </p>
+              </div>
+              <button 
+                onClick={handleRestartTutorial} 
+                className="btn-primary tutorial-restart-btn"
+              >
+                🔄 Restart Tutorial
+              </button>
+              <div className="tutorial-note">
+                <p>
+                  <em>Note: This will reset your tutorial progress and redirect you to the home page 
+                  to start the guided tour.</em>
+                </p>
+              </div>
             </div>
           )}
         </div>

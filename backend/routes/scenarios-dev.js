@@ -495,11 +495,16 @@ router.post('/:id/start', (req, res) => {
       return res.status(404).json({ message: 'Scenario not found' });
     }
 
+    // Get user info from request body (for development)
+    const { userId, username } = req.body;
+
     // Create new game session
     const sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
     const gameSession = {
       _id: sessionId,
       scenario: req.params.id,
+      userId: userId || 'guest',
+      username: username || 'Guest Player',
       currentNodeId: scenario.startingNode,
       playerState: {
         health: 100,
@@ -656,6 +661,94 @@ router.post('/sessions/:sessionId/decision', (req, res) => {
     }
   } catch (error) {
     console.error('Decision error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// @route   GET /api/scenarios-dev/leaderboard
+// @desc    Get leaderboard (development)
+// @access  Public
+router.get('/leaderboard', (req, res) => {
+  try {
+    const { limit = 10, sortBy = 'highScore' } = req.query;
+
+    // Calculate leaderboard from game sessions
+    const userScores = {};
+
+    Object.values(gameSessions).forEach(session => {
+      if (session.isCompleted && session.finalOutcome === 'success') {
+        const userId = session.userId || 'guest';
+        const username = session.username || 'Guest Player';
+        
+        // Calculate score based on various factors
+        const timeScore = session.endTime && session.startTime 
+          ? Math.max(0, 300 - Math.floor((new Date(session.endTime) - new Date(session.startTime)) / 1000)) * 0.5 
+          : 0;
+        const healthScore = session.playerState.health * 0.3;
+        const decisionAccuracy = session.decisions.length > 0
+          ? session.decisions.filter(d => d.wasCorrect).length / session.decisions.length
+          : 0;
+        const knowledgeScore = decisionAccuracy * 50;
+        const totalScore = Math.round(100 + timeScore + healthScore + knowledgeScore);
+
+        if (!userScores[userId]) {
+          userScores[userId] = {
+            _id: userId,
+            username: username,
+            highScore: totalScore,
+            totalGames: 1,
+            totalScore: totalScore,
+            bestTime: session.endTime && session.startTime 
+              ? Math.floor((new Date(session.endTime) - new Date(session.startTime)) / 1000)
+              : null
+          };
+        } else {
+          userScores[userId].totalGames += 1;
+          userScores[userId].totalScore += totalScore;
+          userScores[userId].highScore = Math.max(userScores[userId].highScore, totalScore);
+          
+          const currentTime = session.endTime && session.startTime 
+            ? Math.floor((new Date(session.endTime) - new Date(session.startTime)) / 1000)
+            : null;
+          
+          if (currentTime && (!userScores[userId].bestTime || currentTime < userScores[userId].bestTime)) {
+            userScores[userId].bestTime = currentTime;
+          }
+        }
+      }
+    });
+
+    // Convert to array and add average score
+    let leaderboard = Object.values(userScores).map(user => ({
+      ...user,
+      averageScore: Math.round(user.totalScore / user.totalGames * 10) / 10
+    }));
+
+    // Sort based on sortBy parameter
+    if (sortBy === 'avgScore') {
+      leaderboard.sort((a, b) => b.averageScore - a.averageScore);
+    } else if (sortBy === 'totalGames') {
+      leaderboard.sort((a, b) => b.totalGames - a.totalGames || b.highScore - a.highScore);
+    } else {
+      leaderboard.sort((a, b) => b.highScore - a.highScore);
+    }
+
+    // Limit results
+    leaderboard = leaderboard.slice(0, parseInt(limit));
+
+    // Add rank
+    leaderboard = leaderboard.map((entry, index) => ({
+      rank: index + 1,
+      ...entry
+    }));
+
+    res.json({ 
+      leaderboard,
+      sortBy 
+    });
+
+  } catch (error) {
+    console.error('Get leaderboard error:', error);
     res.status(500).json({ message: 'Server error' });
   }
 });

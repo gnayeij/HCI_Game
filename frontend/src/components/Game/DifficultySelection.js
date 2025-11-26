@@ -1,10 +1,12 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useTutorial } from '../../contexts/TutorialContext';
 import './DifficultySelection.css';
 
 const DifficultySelection = () => {
   const { scenarioId } = useParams();
   const navigate = useNavigate();
+  const { nextStep, isStepActive } = useTutorial();
 
   const difficulties = [
     {
@@ -49,6 +51,10 @@ const DifficultySelection = () => {
   ];
 
   const handleDifficultySelect = (difficulty) => {
+    // If tutorial is active on this step, advance to next step
+    if (isStepActive('difficulty-selection')) {
+      nextStep();
+    }
     navigate(`/game/${scenarioId}/${difficulty}`);
   };
 

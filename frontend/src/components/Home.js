@@ -1,10 +1,30 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useTutorial } from '../contexts/TutorialContext';
 import './Home.css';
 
 const Home = () => {
   const { isAuthenticated } = useAuth();
+  const { startTutorial, hasSeenTutorial, isActive, nextStep, isStepActive } = useTutorial();
+
+  // Auto-start tutorial for first-time authenticated users
+  useEffect(() => {
+    if (isAuthenticated && !hasSeenTutorial && !isActive) {
+      // Small delay to let the page render
+      const timer = setTimeout(() => {
+        startTutorial();
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [isAuthenticated, hasSeenTutorial, isActive, startTutorial]);
+
+  const handleStartTraining = () => {
+    // If tutorial is active on this step, advance to next step
+    if (isStepActive('home-start')) {
+      nextStep();
+    }
+  };
 
   return (
     <div className="home">
@@ -22,7 +42,12 @@ const Home = () => {
           
           <div className="cta-buttons">
             {isAuthenticated ? (
-              <Link to="/scenarios" className="cta-button primary">
+              <Link 
+                to="/scenarios" 
+                className="cta-button primary"
+                id="start-training-btn"
+                onClick={handleStartTraining}
+              >
                 Start Training
               </Link>
             ) : (
@@ -68,9 +93,9 @@ const Home = () => {
             </div>
             
             <div className="feature-card">
-              <div className="feature-icon">📱</div>
-              <h3>Cross-Platform</h3>
-              <p>Train anywhere on PC, tablet, or mobile devices</p>
+              <div className="feature-icon">🏆</div>
+              <h3>Compete & Compare</h3>
+              <p>See how you rank against other players on the leaderboard</p>
             </div>
             
             <div className="feature-card">
@@ -78,6 +103,23 @@ const Home = () => {
               <h3>Educational</h3>
               <p>Learn real fire safety principles and best practices</p>
             </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="cta-section">
+        <div className="container">
+          <h2>Ready to Test Your Skills?</h2>
+          <p>Join other fire safety champions and see where you rank!</p>
+          <div className="cta-buttons">
+            <Link to="/leaderboard" className="cta-button secondary">
+              View Leaderboard
+            </Link>
+            {!isAuthenticated && (
+              <Link to="/register" className="cta-button primary">
+                Sign Up Now
+              </Link>
+            )}
           </div>
         </div>
       </div>

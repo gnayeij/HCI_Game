@@ -1,19 +1,22 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import { useTutorial } from '../../contexts/TutorialContext';
 import { scenariosAPI } from '../../services/api';
 import GameConsole from './GameConsole';
 import GameSidebar from './GameSidebar';
 import GameTimer from './GameTimer';
+import SmokeEffect from './SmokeEffect';
 import './GameBoard.css';
 
 const GameBoard = () => {
   const { scenarioId, difficulty } = useParams();
   const navigate = useNavigate();
   const { user, token, isAuthenticated } = useAuth();
+  const { nextStep, isStepActive, skipTutorial } = useTutorial();
   
-  // Determine decision time based on difficulty
-  const getDecisionTimeLimit = (diff) => {
+  // Determine base decision time based on difficulty
+  const getBaseDecisionTime = (diff) => {
     switch (diff) {
       case 'easy':
         return 30;
@@ -26,12 +29,19 @@ const GameBoard = () => {
     }
   };
   
-  const DECISION_TIME_LIMIT = getDecisionTimeLimit(difficulty);
+  const BASE_DECISION_TIME = getBaseDecisionTime(difficulty);
+  
+  // Calculate decision time based on oxygen level (rounded up)
+  const calculateDecisionTime = (oxygenLevel) => {
+    const baseTime = BASE_DECISION_TIME;
+    const adjustedTime = baseTime * (oxygenLevel / 100);
+    return Math.ceil(adjustedTime); // Round up
+  };
   
   console.log('GameBoard - Auth state:', { user, token: token ? 'Present' : 'Missing', isAuthenticated });
   console.log('GameBoard - Scenario ID:', scenarioId);
   console.log('GameBoard - Difficulty:', difficulty);
-  console.log('GameBoard - Decision Time Limit:', DECISION_TIME_LIMIT);
+  console.log('GameBoard - Base Decision Time:', BASE_DECISION_TIME);
   
   const [gameState, setGameState] = useState({
     scenario: null,
@@ -88,7 +98,7 @@ const GameBoard = () => {
         currentNode: currentNode,
         playerState: session.playerState,
         gameStatus: 'playing',
-        timeRemaining: DECISION_TIME_LIMIT, // Use unified timer
+        timeRemaining: calculateDecisionTime(session.playerState.oxygen), // Use oxygen-adjusted timer
         isTimerActive: false,
         timeoutCount: 0 // Track how many times user has timed out
       });
@@ -116,7 +126,7 @@ const GameBoard = () => {
         setTimeout(() => {
           setGameState(prev => ({
             ...prev,
-            timeRemaining: DECISION_TIME_LIMIT, // Use unified timer
+            timeRemaining: calculateDecisionTime(prev.playerState.oxygen), // Use oxygen-adjusted timer
             isTimerActive: true
           }));
         }, 2000); // Give player time to read the scenario
@@ -133,7 +143,7 @@ const GameBoard = () => {
         error: error.response?.data?.message || error.message || 'Failed to initialize game'
       }));
     }
-  }, [scenarioId, DECISION_TIME_LIMIT]);
+  }, [scenarioId, BASE_DECISION_TIME]);
 
   useEffect(() => {
     initializeGame();
@@ -143,6 +153,12 @@ const GameBoard = () => {
     if (gameState.gameStatus !== 'playing') {
       console.log('Game not in playing state, ignoring decision');
       return;
+    }
+
+    // If this is the first decision in tutorial, advance to completion screen
+    if (isStepActive('game-decision')) {
+      nextStep(); // Move to completion screen (step 5)
+      // Don't auto-close - let user click "Finish" button
     }
 
     // Stop timer when a decision is made and reset timeout processing flag
@@ -239,7 +255,7 @@ const GameBoard = () => {
           ...prev,
           playerState: session.playerState,
           currentNode: currentNode,
-          timeRemaining: DECISION_TIME_LIMIT, // Use unified timer
+          timeRemaining: calculateDecisionTime(session.playerState.oxygen), // Use oxygen-adjusted timer
           isTimerActive: false
         }));
 
@@ -255,7 +271,7 @@ const GameBoard = () => {
           if (currentNode && currentNode.decisions && currentNode.decisions.length > 0) {
             setGameState(prev => ({
               ...prev,
-              timeRemaining: DECISION_TIME_LIMIT, // Use unified timer
+              timeRemaining: calculateDecisionTime(prev.playerState.oxygen), // Use oxygen-adjusted timer
               isTimerActive: true
             }));
           }
@@ -357,7 +373,7 @@ const GameBoard = () => {
           // Restart timer for same decision
           setGameState(prev => ({
             ...prev,
-            timeRemaining: DECISION_TIME_LIMIT, // Use unified timer
+            timeRemaining: calculateDecisionTime(prev.playerState.oxygen), // Use oxygen-adjusted timer
             isTimerActive: true
           }));
           
@@ -375,6 +391,21 @@ const GameBoard = () => {
 
   const handleReturnHome = () => {
     navigate('/');
+  };
+
+  const handleBackToScenarios = () => {
+    // Only show confirmation if game is in progress
+    if (gameState.gameStatus === 'playing') {
+      const confirmed = window.confirm(
+        'Are you sure you want to leave this game? Your progress will be lost.'
+      );
+      if (confirmed) {
+        navigate('/scenarios');
+      }
+    } else {
+      // If game is completed or in error state, navigate directly
+      navigate('/scenarios');
+    }
   };
 
   if (gameState.gameStatus === 'loading') {
@@ -402,12 +433,30 @@ const GameBoard = () => {
     );
   }
 
+  // Debug: Log game state for smoke effect
+  console.log('GameBoard render - Smoke conditions:', {
+    gameStatus: gameState.gameStatus,
+    isTimerActive: gameState.isTimerActive,
+    timeRemaining: gameState.timeRemaining,
+    shouldShowSmoke: gameState.gameStatus === 'playing' && gameState.isTimerActive
+  });
+
   return (
     <div className="game-board">
+      {/* Smoke effect background - intensity increases as timer counts down */}
+      {/* Simplified condition: show whenever game is playing */}
+      {gameState.gameStatus === 'playing' && (
+        <SmokeEffect
+          timeRemaining={gameState.timeRemaining || 0}
+          maxTime={calculateDecisionTime(gameState.playerState.oxygen)}
+          oxygenLevel={gameState.playerState.oxygen}
+        />
+      )}
+      
       <div className="game-header">
         <button 
           className="back-to-scenarios-button" 
-          onClick={() => navigate('/scenarios')}
+          onClick={handleBackToScenarios}
           aria-label="Back to Scenarios"
         >
           <span className="back-arrow">←</span>
@@ -419,7 +468,7 @@ const GameBoard = () => {
             {difficulty === 'easy' && '🌱 Easy'}
             {difficulty === 'medium' && '⚡ Medium'}
             {difficulty === 'hard' && '🔥 Hard'}
-            {' - '}{DECISION_TIME_LIMIT}s per decision
+            {' - '}{BASE_DECISION_TIME}s base time
           </span>
         </div>
         <div className="timer-placeholder">

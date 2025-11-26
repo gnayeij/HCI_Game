@@ -1,0 +1,85 @@
+/* Tutorial Overlay - Dark background with spotlight effect */
+.tutorial-overlay-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10000;
+  pointer-events: none;
+}
+
+/* Full overlay for when there's no target */
+.tutorial-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.75);
+  pointer-events: all;
+  animation: tutorialFadeIn 0.3s ease-out;
+  z-index: 10000;
+}
+
+/* Four panel overlay system that creates a hole */
+.tutorial-overlay-panel {
+  position: fixed;
+  background: rgba(0, 0, 0, 0.75);
+  pointer-events: all;
+  z-index: 10000;
+  animation: tutorialFadeIn 0.3s ease-out;
+}
+
+/* Spotlight effect - just the border/glow, no background */
+.tutorial-spotlight {
+  position: fixed;
+  border-radius: 8px;
+  box-shadow: 
+    0 0 0 4px rgba(66, 165, 245, 0.8),
+    0 0 20px 2px rgba(66, 165, 245, 0.6);
+  pointer-events: none;
+  transition: all 0.3s ease-out;
+  animation: spotlightPulse 2s ease-in-out infinite;
+  z-index: 10001;
+}
+
+@keyframes tutorialFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes spotlightPulse {
+  0%, 100% {
+    box-shadow: 
+      0 0 0 4px rgba(66, 165, 245, 0.8),
+      0 0 20px 2px rgba(66, 165, 245, 0.6);
+  }
+  50% {
+    box-shadow: 
+      0 0 0 4px rgba(66, 165, 245, 1),
+      0 0 30px 4px rgba(66, 165, 245, 0.8);
+  }
+}
+
+/* Make sure highlighted elements are clickable */
+.tutorial-spotlight ~ * {
+  pointer-events: auto;
+}
+
+@media (max-width: 768px) {
+  .tutorial-overlay {
+    background: rgba(0, 0, 0, 0.85);
+  }
+  
+  .tutorial-spotlight {
+    box-shadow: 
+      0 0 0 3px rgba(66, 165, 245, 0.5),
+      0 0 0 9999px rgba(0, 0, 0, 0.85),
+      0 0 20px rgba(66, 165, 245, 0.5);
+  }
+}

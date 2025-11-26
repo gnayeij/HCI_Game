@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
+import { TutorialProvider } from './contexts/TutorialContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Navbar from './components/Navbar';
 import Home from './components/Home';
@@ -10,6 +11,8 @@ import GameBoard from './components/Game/GameBoard';
 import ScenariosList from './components/Game/ScenariosList';
 import DifficultySelection from './components/Game/DifficultySelection';
 import Profile from './components/Profile';
+import Leaderboard from './components/Leaderboard';
+import TutorialOverlay from './components/Tutorial/TutorialOverlay';
 import './App.css';
 
 function AppContent() {
@@ -18,11 +21,13 @@ function AppContent() {
   return (
     <div className="App">
       <Navbar />
+      <TutorialOverlay />
       <main className="main-content">
         <Routes key={location.pathname}>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/leaderboard" element={<Leaderboard />} />
           <Route 
             path="/scenarios" 
             element={
@@ -65,9 +70,11 @@ function AppContent() {
 function App() {
   return (
     <AuthProvider>
-      <Router>
-        <AppContent />
-      </Router>
+      <TutorialProvider>
+        <Router>
+          <AppContent />
+        </Router>
+      </TutorialProvider>
     </AuthProvider>
   );
 }

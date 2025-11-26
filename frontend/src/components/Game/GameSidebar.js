@@ -14,12 +14,6 @@ const GameSidebar = ({ playerState, currentLocation, scenario, timeoutCount }) =
     return 'red';
   };
 
-  const getVisibilityColor = (visibility) => {
-    if (visibility >= 70) return 'green';
-    if (visibility >= 40) return 'yellow';
-    return 'red';
-  };
-
   const getTimeoutUrgency = (count) => {
     if (count === 0) return 'safe';
     if (count === 1) return 'warning';
@@ -71,12 +65,6 @@ const GameSidebar = ({ playerState, currentLocation, scenario, timeoutCount }) =
             color={getOxygenColor(playerState.oxygen)}
             icon="💨"
           />
-          <StatBar 
-            label="Visibility" 
-            value={playerState.visibility} 
-            color={getVisibilityColor(playerState.visibility)}
-            icon="👁️"
-          />
         </div>
       </div>
 
@@ -112,64 +100,6 @@ const GameSidebar = ({ playerState, currentLocation, scenario, timeoutCount }) =
 
       <div className="sidebar-section">
         <h3 className="section-title">
-          <span className="section-icon">📍</span>
-          Current Location
-        </h3>
-        <div className="location-info">
-          <div className="location-name">{currentLocation || 'Unknown'}</div>
-        </div>
-      </div>
-
-      <div className="sidebar-section">
-        <h3 className="section-title">
-          <span className="section-icon">🎒</span>
-          Inventory
-        </h3>
-        <div className="inventory-container">
-          {playerState.inventory && playerState.inventory.length > 0 ? (
-            <div className="inventory-items">
-              {playerState.inventory.map((item, index) => (
-                <div key={index} className="inventory-item">
-                  <span className="item-icon">📦</span>
-                  <span className="item-name">{item}</span>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="inventory-empty">
-              <span className="empty-icon">🔍</span>
-              <span>No items in inventory</span>
-            </div>
-          )}
-        </div>
-      </div>
-
-      <div className="sidebar-section">
-        <h3 className="section-title">
-          <span className="section-icon">🏢</span>
-          Building Map
-        </h3>
-        <div className="mini-map">
-          <div className="map-container">
-            <div className="floor-indicator">
-              <span className="floor-label">Floor 15</span>
-              <span className="you-are-here">📍 You are here</span>
-            </div>
-            <div className="building-layout">
-              <div className="floor-plan">
-                <div className="room current-room">Your Office</div>
-                <div className="corridor">Hallway</div>
-                <div className="exit-sign">🚪 Exit</div>
-                <div className="elevator">🛗 Elevator</div>
-                <div className="stairs">🏃 Stairs</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="sidebar-section">
-        <h3 className="section-title">
           <span className="section-icon">💡</span>
           Quick Tips
         </h3>
@@ -184,7 +114,7 @@ const GameSidebar = ({ playerState, currentLocation, scenario, timeoutCount }) =
           </div>
           <div className="tip-item">
             <span className="tip-icon">📞</span>
-            <span className="tip-text">Call 911 when safe</span>
+            <span className="tip-text">Call 995 when safe</span>
           </div>
           <div className="tip-item">
             <span className="tip-icon">🏃</span>
